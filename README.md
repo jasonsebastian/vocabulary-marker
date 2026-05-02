@@ -33,11 +33,10 @@ cherry
 python3 main.py
 ```
 
-Or use explicit commands:
+Or use explicit command:
 
 ```bash
 python3 main.py mark
-python3 main.py list-new
 ```
 
 3. Answer prompts like:
