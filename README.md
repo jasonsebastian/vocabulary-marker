@@ -33,6 +33,13 @@ cherry
 python3 main.py
 ```
 
+Or use explicit commands:
+
+```bash
+python3 main.py mark
+python3 main.py list-new
+```
+
 3. Answer prompts like:
 
 ```text
@@ -81,6 +88,27 @@ At end of a successful run, CLI prints counts:
 
 ```text
 kept X, prompted Y, new Z, learnt W, removed R
+```
+
+## List new words
+
+Run:
+
+```bash
+python3 main.py list-new
+```
+
+Output:
+
+- Each new word on its own line.
+- Final summary line: `total new: N`.
+
+Example:
+
+```text
+Apple
+Cherry
+total new: 2
 ```
 
 ## Run tests

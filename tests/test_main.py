@@ -150,5 +150,54 @@ class MainIntegrationTests(unittest.TestCase):
             self.assertIn("input.txt not found", output_buffer.getvalue())
 
 
+class ListNewCommandTests(unittest.TestCase):
+    def test_list_new_prints_only_new_words_and_total(self) -> None:
+        with TemporaryDirectory() as td:
+            cwd = Path(td)
+            (cwd / "output.txt").write_text("Apple n\nbanana\nCherry n\n", encoding="utf-8")
+            output_buffer = io.StringIO()
+            old_cwd = Path.cwd()
+            try:
+                os.chdir(cwd)
+                with redirect_stdout(output_buffer):
+                    code = main(["list-new"])
+            finally:
+                os.chdir(old_cwd)
+
+            self.assertEqual(code, 0)
+            self.assertEqual(output_buffer.getvalue(), "Apple\nCherry\ntotal new: 2\n")
+
+    def test_list_new_missing_output_prints_zero(self) -> None:
+        with TemporaryDirectory() as td:
+            cwd = Path(td)
+            output_buffer = io.StringIO()
+            old_cwd = Path.cwd()
+            try:
+                os.chdir(cwd)
+                with redirect_stdout(output_buffer):
+                    code = main(["list-new"])
+            finally:
+                os.chdir(old_cwd)
+
+            self.assertEqual(code, 0)
+            self.assertEqual(output_buffer.getvalue(), "total new: 0\n")
+
+    def test_list_new_malformed_output_fails_nonzero(self) -> None:
+        with TemporaryDirectory() as td:
+            cwd = Path(td)
+            (cwd / "output.txt").write_text("\n", encoding="utf-8")
+            output_buffer = io.StringIO()
+            old_cwd = Path.cwd()
+            try:
+                os.chdir(cwd)
+                with redirect_stdout(output_buffer):
+                    code = main(["list-new"])
+            finally:
+                os.chdir(old_cwd)
+
+            self.assertEqual(code, 1)
+            self.assertIn("blank line not allowed", output_buffer.getvalue())
+
+
 if __name__ == "__main__":
     unittest.main()

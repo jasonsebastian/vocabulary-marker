@@ -1,8 +1,10 @@
+import argparse
 import os
+import sys
 import tempfile
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Callable
+from typing import Callable, List, Optional
 
 
 class ParseError(ValueError):
@@ -126,7 +128,7 @@ def write_output_atomic(path: Path, lines: list[str]) -> None:
             leftover.unlink()
 
 
-def main() -> int:
+def run_mark() -> int:
     input_path = Path("input.txt")
     output_path = Path("output.txt")
 
@@ -151,5 +153,45 @@ def main() -> int:
     return 0
 
 
+def run_list_new() -> int:
+    output_path = Path("output.txt")
+    if not output_path.exists():
+        print("total new: 0")
+        return 0
+
+    try:
+        entries = read_output_entries(output_path)
+    except (ParseError, ValueError, UnicodeDecodeError) as exc:
+        print(str(exc))
+        return 1
+
+    new_words = [entry.display_word for entry in entries.values() if entry.is_new]
+    for word in new_words:
+        print(word)
+    print(f"total new: {len(new_words)}")
+    return 0
+
+
+def build_parser() -> argparse.ArgumentParser:
+    parser = argparse.ArgumentParser(prog="vocabulary-marker")
+    subparsers = parser.add_subparsers(dest="command")
+    subparsers.add_parser("mark")
+    subparsers.add_parser("list-new")
+    return parser
+
+
+def main(argv: Optional[List[str]] = None) -> int:
+    parser = build_parser()
+    args = parser.parse_args([] if argv is None else argv)
+    command = args.command or "mark"
+
+    if command == "mark":
+        return run_mark()
+    if command == "list-new":
+        return run_list_new()
+    parser.print_help()
+    return 1
+
+
 if __name__ == "__main__":
-    raise SystemExit(main())
+    raise SystemExit(main(sys.argv[1:]))
