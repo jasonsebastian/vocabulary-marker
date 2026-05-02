@@ -1,6 +1,6 @@
 # Vocabulary Marker CLI
 
-Small Python CLI with two commands: `mark` and `list-new`.
+Small Python CLI to mark words as learnt or new.
 
 ## Table of contents
 
